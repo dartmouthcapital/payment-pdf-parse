@@ -22,6 +22,7 @@ Usage: `bin/cli.dart file [arguments]`
 * `-f, --file`      - Path of the PDF file to parse.
 * `-p, --provider`  - PDF Provider - "ps" or "fis".
 * `-c, --clear`     - Clear output directory.
+* `-z, --zip`       - Zip up output images.
 
 ### Parse a directory
 
@@ -29,3 +30,4 @@ Usage: `bin/cli.dart directory [arguments]`
 * `-d, --directory`   - Directory containing PDF files to parse.
 * `-p, --provider`    - PDF Provider - "ps" or "fis".
 * `-c, --clear`       - Clear output directory.
+* `-z, --zip`         - Zip up output images.

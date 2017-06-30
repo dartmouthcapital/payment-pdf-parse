@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:archive/archive.dart';
 import 'package:crypto/crypto.dart' as crypto show sha1;
 import 'package:meta/meta.dart' show protected;
 import 'package:path/path.dart' as path;
@@ -29,12 +30,12 @@ abstract class Parser {
     }
 
     /// Parse all PDFs in the given directory
-    parseDirectory(String directory, [clear = false]) {
+    parseDirectory(String directory, {clear = false, zip = false}) {
         Directory pdfDirectory = new Directory(directory);
         if (!pdfDirectory.existsSync()) {
             throw new Exception('PDF directory does not exist.');
         }
-        if (clear && outputDirectory.existsSync()) {
+        if ((clear || zip) && outputDirectory.existsSync()) {
             _clearDirectory(outputDirectory);
         }
         for (File file in pdfDirectory.listSync(followLinks: false)) {
@@ -45,14 +46,17 @@ abstract class Parser {
                     String message = e is Exception ? e.message : e.toString();
                     print('Error processing "${path.basename(file.path)}": $message');
                     //print(stackTrace);
-                    exit(1);
                 }
             }
+        }
+
+        if (zip) {
+            _archiveOutput(path.basename(directory));
         }
     }
 
     /// Parse a given PDF file path
-    parsePdf(String pathToPdf, [clear = false]) {
+    parsePdf(String pathToPdf, {clear = false, zip = false}) {
         if (!workingDirectory.existsSync()) {
             workingDirectory.createSync();
         }
@@ -60,7 +64,7 @@ abstract class Parser {
         if (!outputDirectory.existsSync()) {
             outputDirectory.createSync();
         }
-        else if (clear) {
+        else if (clear || zip) {
             _clearDirectory(outputDirectory);
         }
         var pdf = new File(pathToPdf);
@@ -77,12 +81,29 @@ abstract class Parser {
         processImages(references);
 
         print('${references.length} checks were processed for ${path.basename(pathToPdf)}');
+
+        if (zip) {
+            _archiveOutput(path.basenameWithoutExtension(pathToPdf));
+        }
     }
 
     void _clearDirectory(Directory directory) {
         for (File file in directory.listSync(followLinks: false)) {
             file.deleteSync();
         }
+    }
+
+    void _archiveOutput(archiveName) {
+        Archive archive = new Archive();
+        for (File file in outputDirectory.listSync(followLinks: false)) {
+            var bytes = file.readAsBytesSync(),
+                archiveFile = new ArchiveFile(path.basename(file.path), bytes.length, bytes);
+            archive.addFile(archiveFile);
+        }
+        List<int> zip = new ZipEncoder().encode(archive);
+        File zipFile = new File(outputPath + ps + archiveName + '.zip');
+        zipFile.writeAsBytesSync(zip);
+        print(archiveName + '.zip created');
     }
 
     @protected

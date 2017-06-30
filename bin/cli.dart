@@ -42,7 +42,8 @@ class FileParserCommand extends ParserCommand {
         argParser
             ..addOption('file', abbr: 'f', help: 'Path of the PDF file to parse.')
             ..addOption('provider', abbr: 'p', help: 'PDF Provider - "ps" or "fis".')
-            ..addFlag('clear', abbr: 'c', help: 'Clear output directory.', negatable: false);
+            ..addFlag('clear', abbr: 'c', help: 'Clear output directory.', negatable: false)
+            ..addFlag('zip', abbr: 'z', help: 'Zip up output images.', negatable: false);
     }
 
     run() {
@@ -50,7 +51,8 @@ class FileParserCommand extends ParserCommand {
         if (path == null) {
             throw new UsageException('"file" option must be set.', 'file -f /path/to/pdf');
         }
-        provider(argResults['provider']).parsePdf(path, argResults['clear']);
+        provider(argResults['provider'])
+            .parsePdf(path, clear: argResults['clear'], zip: argResults['zip']);
     }
 }
 
@@ -63,7 +65,8 @@ class DirectoryParserCommand extends ParserCommand {
         argParser
             ..addOption('directory', abbr: 'd', help: 'Directory containing PDF files to parse.')
             ..addOption('provider', abbr: 'p', help: 'PDF Provider - "ps" or "fis".')
-            ..addFlag('clear', abbr: 'c', help: 'Clear output directory.', negatable: false);
+            ..addFlag('clear', abbr: 'c', help: 'Clear output directory.', negatable: false)
+            ..addFlag('zip', abbr: 'z', help: 'Zip up output images.', negatable: false);
     }
 
     run() {
@@ -71,6 +74,7 @@ class DirectoryParserCommand extends ParserCommand {
         if (path == null) {
             throw new UsageException('"directory" option must be set.', 'directory -d /path/to/pdfs');
         }
-        provider(argResults['provider']).parseDirectory(path, argResults['clear']);
+        provider(argResults['provider'])
+            .parseDirectory(path, clear: argResults['clear'], zip: argResults['zip']);
     }
 }
