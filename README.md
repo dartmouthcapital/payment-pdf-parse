@@ -7,6 +7,19 @@ A CLI utility for parsing ProfitStars & FIS PDF files into individual check imag
 * imagemagick
 * xpdf (pdttotext, pdfimages)
 
+## Server
+
+Run `dart bin/server.dart`
+
+#### Request
+```
+POST http://localhost:8080/?provider=ps|fis HTTP/1.1
+Content-Type: application/pdf
+Content-Length: [NUMBER_OF_BYTES_IN_FILE]
+
+[PDF_DATA]
+```
+
 ## CLI
 
 Usage: `bin/cli.dart <command> [arguments]`

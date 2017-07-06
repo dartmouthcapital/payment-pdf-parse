@@ -2,8 +2,6 @@
 import 'dart:io';
 import 'package:args/command_runner.dart';
 import '../lib/parser.dart';
-import '../lib/parser/fis.dart';
-import '../lib/parser/profit_stars.dart';
 
 main(List<String> args) {
     var runner = new CommandRunner('ppp-cli', 'Payment PDF Parser CLI')
@@ -22,14 +20,12 @@ main(List<String> args) {
 
 abstract class ParserCommand extends Command {
     Parser provider(type) {
-        switch (type) {
-            case 'ps':
-                return new ProfitStarsParser();
-            case 'fis':
-                return new FisParser();
-            default:
-                throw new UsageException('"provider" option must be either "ps" or "fis".', '-p ps');
+        var parser = Parser.provider(type);
+        if (parser == null) {
+            throw new UsageException('"provider" option must be either "ps" or "fis".', '-p ps');
         }
+        parser.logger = print;
+        return parser;
     }
 }
 

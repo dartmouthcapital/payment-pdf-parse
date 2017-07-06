@@ -10,5 +10,8 @@ dependencies:
   archive:
   args:
   crypto:
+  http:
   meta:
   path:
+  shelf_exception_handler:
+  shelf_route:
