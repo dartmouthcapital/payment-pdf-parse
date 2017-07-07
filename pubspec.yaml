@@ -13,5 +13,6 @@ dependencies:
   http:
   meta:
   path:
+  shelf:
   shelf_exception_handler:
   shelf_route:

@@ -25,7 +25,7 @@ Router appRouter = router()
             throw e;
         }
     })
-    ..add('/', ['OPTIONS'], (Request request) {
+    ..add('/', ['GET', 'OPTIONS'], (Request request) {
         return new Response.ok('Ok');
     });
 
@@ -35,7 +35,7 @@ Middleware appMiddleware = createMiddleware(
 );
 
 Response _reqHandler(Request request) {
-    if (!['POST', 'OPTIONS'].contains(request.method)) {
+    if (!['POST', 'GET', 'OPTIONS'].contains(request.method)) {
         throw new MethodNotAllowed();
     }
     return null;
@@ -48,5 +48,5 @@ Response _respHandler(Response response) {
 Map _CORSHeader = {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept',
-    'Access-Control-Allow-Methods': 'POST, OPTIONS'
+    'Access-Control-Allow-Methods': 'POST, GET, OPTIONS'
 };

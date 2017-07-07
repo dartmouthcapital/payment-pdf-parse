@@ -17,7 +17,7 @@ main(List<String> args) {
     printRoutes(appRouter.appRouter);
 
     String host = Platform.environment.containsKey('SHELF_HTTP_HOST') ?
-        Platform.environment['SHELF_HTTP_HOST'] : InternetAddress.LOOPBACK_IP_V4.host;
+        Platform.environment['SHELF_HTTP_HOST'] : '0.0.0.0';
     int port = Platform.environment.containsKey('SHELF_HTTP_PORT') ?
         int.parse(Platform.environment['SHELF_HTTP_PORT']) : 8080;
 

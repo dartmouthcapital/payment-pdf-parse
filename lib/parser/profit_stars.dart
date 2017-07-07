@@ -5,15 +5,16 @@ import '../parser.dart';
 class ProfitStarsParser extends Parser {
     List<String> ignoreHashes = [
         'B4DB9B8349449A77318EF65E04CA848F309230C2',  // gray bar
-        '958B3475E8E7745285E2804F949D48D8C61C1B48'  // red/orange header
+        '958B3475E8E7745285E2804F949D48D8C61C1B48',  // red/orange header, windows
+        'D84B02FFAC03442C251CE1BC30E79ECC0166FB48'  // red/orange header, linux
     ];
 
     List<String> parseText([String fileName = 'batch.txt']) {
         var file = new File(workingPath + ps + fileName),
             contents = file.readAsStringSync(),
             references = [],
-            referenceExp = new RegExp(r"Reference Number\r?\n([A-Z0-9]{9,11})|/[0-9]{2}\s([A-Z0-9]{9,11})", multiLine: true),  // "(?:[^:])\s([A-Z0-9]{10,11})\s"
-            amountsExp = new RegExp(r"sale[\s\r\n]+([\d\.,]+)", multiLine: true),
+            referenceExp = new RegExp(r"/\d{2}\s+([A-Z0-9]{9,11})\s+", multiLine: true),
+            amountsExp = new RegExp(r"sale[\s]+([\d\.,]+)", multiLine: true),
             countExp = new RegExp(r"(\d+) Check 21 TRANSACTIONS FOR CREDIT"),
             referenceMatches = new List.from(referenceExp.allMatches(contents)),
             amountsMatches = new List.from(amountsExp.allMatches(contents)),
@@ -30,7 +31,7 @@ class ProfitStarsParser extends Parser {
             Match reference = referenceMatches[i],
                   amount = amountsMatches[i];
             int cents = (double.parse(amount.group(1).replaceAll(',', '')) * 100).round();
-            references.add(reference.group(1) ?? reference.group(2) + '-' + cents.toString());
+            references.add(reference.group(1) + '-' + cents.toString());
         }
         return references;
     }

@@ -95,7 +95,7 @@ abstract class Parser {
         }
 
         // parse text
-        Process.runSync('pdftotext', ['-enc', 'UTF-8', pathToPdf, 'batch.txt'], workingDirectory: workingPath);
+        Process.runSync('pdftotext', ['-layout', '-enc', 'UTF-8', '-eol', 'unix', pathToPdf, 'batch.txt'], workingDirectory: workingPath);
         var references = parseText();
 
         // parse images

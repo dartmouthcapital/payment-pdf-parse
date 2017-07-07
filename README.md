@@ -1,15 +1,15 @@
 # Payment PDF Parser
 
-A CLI utility for parsing ProfitStars & FIS PDF files into individual check images named by reference number.
+An HTTP API & CLI utility for parsing ProfitStars & FIS PDF files into individual check images named by reference number.
 
 ## Requirements
 
 * imagemagick
-* xpdf (pdttotext, pdfimages)
+* Poppler/xpdf (pdttotext, pdfimages)
 
 ## Server
 
-Run `dart bin/server.dart`
+Run `dart bin/server.dart`. By default, the HTTP server runs on `0.0.0.0:8080`. Set the ENV variables `SHELF_HTTP_HOST` and `SHELF_HTTP_PORT` to override.
 
 #### Request
 ```
@@ -19,6 +19,8 @@ Content-Length: [NUMBER_OF_BYTES_IN_FILE]
 
 [PDF_DATA]
 ```
+
+Binary ZIP file contents is returned.
 
 ## CLI
 
