@@ -121,6 +121,13 @@ abstract class Parser {
         }
     }
 
+    /// Returns a list of files in the working directory sorted by name.
+    List<File> workingDirectorySorted([extFilter = 'ppm']) {
+        return workingDirectory.listSync(followLinks: false)
+            ..removeWhere((fse) => !(fse is File) || path.extension(fse.path) != '.$extFilter')
+            ..sort((a, b) => path.basename(a.path).compareTo(path.basename(b.path)));
+    }
+
     void _archiveOutput(archiveName) {
         Archive zipArchive = new Archive();
         for (File file in outputDirectory.listSync(followLinks: false)) {

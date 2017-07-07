@@ -40,10 +40,7 @@ class FisParser extends Parser {
     void processImages(List<String> references) {
         int index = 0;
         bool isBack = false;
-        for (FileSystemEntity file in workingDirectory.listSync(followLinks: false)) {
-            if (!(file is File) || path.extension(file.path) != '.ppm') {
-                continue;
-            }
+        for (File file in workingDirectorySorted()) {
             if (ignoreFile(file)) {
                 continue;
             }

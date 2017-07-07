@@ -13,7 +13,7 @@ class ProfitStarsParser extends Parser {
         var file = new File(workingPath + ps + fileName),
             contents = file.readAsStringSync(),
             references = [],
-            referenceExp = new RegExp(r"/\d{2}\s+([A-Z0-9]{9,11})\s+", multiLine: true),
+            referenceExp = new RegExp(r"(PM|AM|/\d{2})\s+([A-Z0-9]{9,11})\s+", multiLine: true),
             amountsExp = new RegExp(r"sale[\s]+([\d\.,]+)", multiLine: true),
             countExp = new RegExp(r"(\d+) Check 21 TRANSACTIONS FOR CREDIT"),
             referenceMatches = new List.from(referenceExp.allMatches(contents)),
@@ -31,7 +31,7 @@ class ProfitStarsParser extends Parser {
             Match reference = referenceMatches[i],
                   amount = amountsMatches[i];
             int cents = (double.parse(amount.group(1).replaceAll(',', '')) * 100).round();
-            references.add(reference.group(1) + '-' + cents.toString());
+            references.add(reference.group(2) + '-' + cents.toString());
         }
         return references;
     }
@@ -39,10 +39,7 @@ class ProfitStarsParser extends Parser {
     void processImages(List<String> references) {
         var nameExp = new RegExp(r"images-(\d+)");
         int index = 0;
-        for (FileSystemEntity file in workingDirectory.listSync(followLinks: false)) {
-            if (!(file is File) || path.extension(file.path) != '.ppm') {
-                continue;
-            }
+        for (File file in workingDirectorySorted()) {
             var baseName = path.basenameWithoutExtension(file.path),
                 match = nameExp.firstMatch(baseName);
             if (match == null) {
