@@ -57,7 +57,7 @@ abstract class Parser {
     parseDirectory(String directory, {clear = false, zip = false}) {
         Directory pdfDirectory = new Directory(directory);
         if (!pdfDirectory.existsSync()) {
-            throw new Exception('PDF directory does not exist.');
+            throw new FileSystemException('PDF directory does not exist.');
         }
         if ((clear || zip) && outputDirectory.existsSync()) {
             _clearDirectory(outputDirectory);
@@ -91,7 +91,7 @@ abstract class Parser {
         }
         var pdf = new File(pathToPdf);
         if (!pdf.existsSync()) {
-            throw new Exception('PDF file does not exist.');
+            throw new FileSystemException('PDF file does not exist.');
         }
 
         // parse text
@@ -122,7 +122,7 @@ abstract class Parser {
     }
 
     /// Returns a list of files in the working directory sorted by name.
-    List<File> workingDirectorySorted([extFilter = 'ppm']) {
+    List<FileSystemEntity> workingDirectorySorted([extFilter = 'ppm']) {
         return workingDirectory.listSync(followLinks: false)
             ..removeWhere((fse) => !(fse is File) || path.extension(fse.path) != '.$extFilter')
             ..sort((a, b) => path.basename(a.path).compareTo(path.basename(b.path)));
@@ -159,4 +159,18 @@ abstract class Parser {
 
     @protected
     void processImages(List<String> references);
+}
+
+class ParseException implements Exception
+{
+    final String message;
+
+    ParseException([this.message]);
+
+    String toString() {
+        if (message == null) {
+            return 'ParseException';
+        }
+        return 'ParseException: $message';
+    }
 }

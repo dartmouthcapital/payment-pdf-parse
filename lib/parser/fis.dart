@@ -9,8 +9,11 @@ class FisParser extends Parser {
 
     List<String> parseText([String fileName = 'batch.txt']) {
         var file = new File(workingPath + ps + fileName),
-            contents = file.readAsStringSync(),
-            references = [],
+            contents = file.readAsStringSync();
+        if (!contents.contains('Deposit Image Report')) {
+            throw new ParseException('Not a FIS PDF.');
+        }
+        var references = [],
             referenceExp = new RegExp(r"Capture Sequence:\s+(\d{13})", multiLine: true),
             amountsExp = new RegExp(r"Item Amount:\s+\$([\d\.,]+)", multiLine: true),
             countExp = new RegExp(r"No of Debits:\s+(\d{1,4})"),
@@ -23,10 +26,10 @@ class FisParser extends Parser {
         amountsMatches.removeLast();
 
         if (expectedCount != referenceMatches.length) {
-            throw new Exception('The expected number of checks (${expectedCount}) does not match the number found (${referenceMatches.length}).');
+            throw new ParseException('The expected number of checks (${expectedCount}) does not match the number found (${referenceMatches.length}).');
         }
         if (referenceMatches.length != amountsMatches.length) {
-            throw new Exception('The number of checks (${referenceMatches.length}) does not match the number of amounts found (${amountsMatches.length}).');
+            throw new ParseException('The number of checks (${referenceMatches.length}) does not match the number of amounts found (${amountsMatches.length}).');
         }
         for (int i = 0; i < referenceMatches.length; i++) {
             Match reference = referenceMatches[i],

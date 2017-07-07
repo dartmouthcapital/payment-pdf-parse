@@ -11,8 +11,11 @@ class ProfitStarsParser extends Parser {
 
     List<String> parseText([String fileName = 'batch.txt']) {
         var file = new File(workingPath + ps + fileName),
-            contents = file.readAsStringSync(),
-            references = [],
+            contents = file.readAsStringSync();
+        if (!contents.contains('Jack Henry & Associates, Inc.')) {
+            throw new ParseException('Not a ProfitStars PDF.');
+        }
+        var references = [],
             referenceExp = new RegExp(r"(PM|AM|/\d{2})\s+([A-Z0-9]{9,11})\s+", multiLine: true),
             amountsExp = new RegExp(r"sale[\s]+([\d\.,]+)", multiLine: true),
             countExp = new RegExp(r"(\d+) Check 21 TRANSACTIONS FOR CREDIT"),
@@ -22,10 +25,10 @@ class ProfitStarsParser extends Parser {
             expectedCount = int.parse(countMatch != null ? countMatch.group(1) : '0');
 
         if (expectedCount != referenceMatches.length) {
-            throw new Exception('The expected number of checks (${expectedCount}) does not match the number found (${referenceMatches.length}).');
+            throw new ParseException('The expected number of checks (${expectedCount}) does not match the number found (${referenceMatches.length}).');
         }
         if (referenceMatches.length != amountsMatches.length) {
-            throw new Exception('The number of checks (${referenceMatches.length}) does not match the number of amounts found (${amountsMatches.length}).');
+            throw new ParseException('The number of checks (${referenceMatches.length}) does not match the number of amounts found (${amountsMatches.length}).');
         }
         for (int i = 0; i < referenceMatches.length; i++) {
             Match reference = referenceMatches[i],
@@ -50,7 +53,7 @@ class ProfitStarsParser extends Parser {
                 continue;
             }
             if (index >= references.length) {
-                throw new Exception('More images than reference numbers were found.');
+                throw new ParseException('More images than reference numbers were found.');
             }
             var newName = 'PNG8:$outputPath$ps${references[index++]}.png';
             Process.runSync(

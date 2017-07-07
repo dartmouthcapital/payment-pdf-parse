@@ -17,11 +17,15 @@ Router appRouter = router()
         }
         try {
             parser.parsePdfContent(bin.toBytes(), zip: true);
-            return new Response.ok(parser.archive.openRead(), headers: {'Content-Type': 'application/zip'});
+            return new Response.ok(
+                parser.archive.openRead(), headers: {'Content-Type': 'application/zip'});
+        } on ParseException catch (e) {
+            throw new BadRequestException(null, e.message);
         } catch (e) {
             if (e is Exception) {
                 throw new HttpException(500, e.message); // ignore: conflicting_dart_import
             }
+            print(e);
             throw e;
         }
     })
