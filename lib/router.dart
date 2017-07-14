@@ -25,7 +25,6 @@ Router appRouter = router()
             if (e is Exception) {
                 throw new HttpException(500, e.message); // ignore: conflicting_dart_import
             }
-            print(e);
             throw e;
         }
     })
