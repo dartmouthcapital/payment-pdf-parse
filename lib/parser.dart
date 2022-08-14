@@ -98,6 +98,10 @@ abstract class Parser {
         Process.runSync('pdftotext', ['-layout', '-enc', 'UTF-8', '-eol', 'unix', pathToPdf, 'batch.txt'], workingDirectory: workingPath);
         var references = parseText();
 
+        // debug
+        // log('References located:');
+        // log(references.join(' | '));
+
         // parse images
         Process.runSync('pdfimages', [pathToPdf, 'images'], workingDirectory: workingPath);
         processImages(references);
@@ -122,7 +126,7 @@ abstract class Parser {
     }
 
     /// Returns a list of files in the working directory sorted by name.
-    List<FileSystemEntity> workingDirectorySorted([extFilter = 'ppm']) {
+    List<FileSystemEntity> workingDirectorySorted([extFilter = 'pbm']) {
         return workingDirectory.listSync(followLinks: false)
             ..removeWhere((fse) => !(fse is File) || path.extension(fse.path) != '.$extFilter')
             ..sort((a, b) => path.basename(a.path).compareTo(path.basename(b.path)));
@@ -151,6 +155,9 @@ abstract class Parser {
     void log(String message) {
         if (logger != null) {
             logger(message);
+        } 
+        else {
+            print(message);
         }
     }
 

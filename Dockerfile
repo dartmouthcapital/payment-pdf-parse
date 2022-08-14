@@ -1,5 +1,5 @@
-# tmannherz/payment-pdf-parse
-FROM google/dart-runtime
+FROM google/dart-runtime:1
+LABEL maintainer="todd.mannherz@gmail.com"
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends imagemagick poppler-utils && \

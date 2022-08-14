@@ -16,13 +16,21 @@ class ProfitStarsParser extends Parser {
             throw new ParseException('Not a ProfitStars PDF.');
         }
         var references = [],
-            referenceExp = new RegExp(r"(PM|AM|/\d{2})\s+([A-Z0-9]{9,11})\s+", multiLine: true),
+            referenceExp = new RegExp(r"(PM|AM|/\d{2})\s{1,10}([A-Z0-9]{9,11})\s+", multiLine: true),
             amountsExp = new RegExp(r"sale[\s]+([\d\.,]+)", multiLine: true),
             countExp = new RegExp(r"(\d+) Check 21 TRANSACTIONS FOR CREDIT"),
             referenceMatches = new List.from(referenceExp.allMatches(contents)),
             amountsMatches = new List.from(amountsExp.allMatches(contents)),
             countMatch = countExp.firstMatch(contents),
             expectedCount = int.parse(countMatch != null ? countMatch.group(1) : '0');
+
+        // debug
+        // for (int i = 0; i < referenceMatches.length; i++) {
+        //     log(referenceMatches[i].group(0));
+        // }
+        // for (int i = 0; i < amountsMatches.length; i++) {
+        //     log(amountsMatches[i].group(0));
+        // }
 
         if (expectedCount != referenceMatches.length) {
             throw new ParseException('The expected number of checks (${expectedCount}) does not match the number found (${referenceMatches.length}).');
@@ -45,6 +53,11 @@ class ProfitStarsParser extends Parser {
         for (File file in workingDirectorySorted()) {
             var baseName = path.basenameWithoutExtension(file.path),
                 match = nameExp.firstMatch(baseName);
+
+            // debug
+            // log(baseName);
+            // log(match.group(0));
+
             if (match == null) {
                 continue;
             }
@@ -58,9 +71,15 @@ class ProfitStarsParser extends Parser {
             var newName = 'PNG8:$outputPath$ps${references[index++]}.png';
             Process.runSync(
                 'magick',
-                [baseName + '.ppm', '-colors', '8', '-resize', '700', '-colorspace', 'RGB', newName],
+                // locally, this works better
+                //[baseName + '.pbm', '-colors', '8', '-resize', '700', '-channel', 'RGB', '-negate', newName],
+                // in the built image, this works better
+                [baseName + '.pbm', '-colors', '8', '-resize', '700', '-colorspace', 'RGB', newName],
                 workingDirectory: workingPath
             );
+        }
+        if (index == 0) {
+            throw new ParseException('No images were available for processing.');
         }
     }
 }
